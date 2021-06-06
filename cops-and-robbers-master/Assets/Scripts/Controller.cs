@@ -180,6 +180,14 @@ public class Controller : MonoBehaviour
         - Movemos al caco a esa casilla
         - Actualizamos la variable currentTile del caco a la nueva casilla
         */
+        List<int> select = new List<int>();
+        for(int i=0; i < Constants.NumTiles; i++)
+        {
+            if (tiles[i].selectable)
+                select.Add(i);
+        }
+        int random =Random.Range(0, select.Count);
+        robber.GetComponent<RobberMove>().currentTile = select[random];
         robber.GetComponent<RobberMove>().MoveToTile(tiles[robber.GetComponent<RobberMove>().currentTile]);
     }
 
@@ -260,7 +268,7 @@ public class Controller : MonoBehaviour
         for (int i = 0; i < Constants.NumTiles; i++)
         {
             tiles[i].visited = false;
-            if (tiles[i].distance <= 2 && i!=indexcurrentTile && i!= cops[1].GetComponent<CopMove>().currentTile)
+            if (tiles[i].distance <= 2 && i != cops[0].GetComponent<CopMove>().currentTile && i!= cops[1].GetComponent<CopMove>().currentTile)
             {
                 tiles[i].selectable = true;
             }
