@@ -185,6 +185,11 @@ public class Controller : MonoBehaviour
         {
             if (tiles[i].selectable)
                 select.Add(i);
+                
+        }
+        for(int i = 0; i < select.Count; i++)
+        {
+            Debug.Log(select[i]);
         }
         int random =Random.Range(0, select.Count);
         robber.GetComponent<RobberMove>().currentTile = select[random];
@@ -268,7 +273,7 @@ public class Controller : MonoBehaviour
         for (int i = 0; i < Constants.NumTiles; i++)
         {
             tiles[i].visited = false;
-            if (tiles[i].distance <= 2 && i != cops[0].GetComponent<CopMove>().currentTile && i!= cops[1].GetComponent<CopMove>().currentTile)
+            if (tiles[i].distance <= 2 && i != cops[0].GetComponent<CopMove>().currentTile && i!= cops[1].GetComponent<CopMove>().currentTile && i != robber.GetComponent<RobberMove>().currentTile )
             {
                 tiles[i].selectable = true;
             }
