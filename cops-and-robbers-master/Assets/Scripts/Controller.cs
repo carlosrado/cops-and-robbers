@@ -62,22 +62,14 @@ public class Controller : MonoBehaviour
         //TODO: Para cada posición, rellenar con 1's las casillas adyacentes (arriba, abajo, izquierda y derecha)
         for (int i = 0; i < Constants.NumTiles; i++)
         {
-            if (i == 0 || i % 8 == 0)
-                matriu[i, i + 7] = 1;
-            else
-                matriu[i, i - 1] = 1;
-            if ((i + 1) % 8 == 0)
-                matriu[i, i - 7] = 1;
-            else
+            if (i + 1 <= 63 && (i+1)%8!=0)
                 matriu[i, i + 1] = 1;
-            if (i <= 7)
-                matriu[i, i + 56] = 1;
-            else
-                matriu[i, i - 8] = 1;
-            if (i >= 56)
-                matriu[i, i - 56] = 1;
-            else
+            if (i - 1 >= 0 && i!=0 && i%8!=0 && i!=0)
+                matriu[i, i - 1] = 1;
+            if (i + 8 <= 63 && i<56)
                 matriu[i, i + 8] = 1;
+            if (i - 8 >= 0 && i>7)
+                matriu[i, i - 8] = 1;
             
         }
         //TODO: Rellenar la lista "adjacency" de cada casilla con los índices de sus casillas adyacentes
@@ -187,10 +179,7 @@ public class Controller : MonoBehaviour
                 select.Add(i);
                 
         }
-        for(int i = 0; i < select.Count; i++)
-        {
-            Debug.Log(select[i]);
-        }
+
         int random =Random.Range(0, select.Count);
         robber.GetComponent<RobberMove>().currentTile = select[random];
         robber.GetComponent<RobberMove>().MoveToTile(tiles[robber.GetComponent<RobberMove>().currentTile]);
@@ -244,7 +233,7 @@ public class Controller : MonoBehaviour
             indexcurrentTile = cops[clickedCop].GetComponent<CopMove>().currentTile;
         else
             indexcurrentTile = robber.GetComponent<RobberMove>().currentTile;
-        
+        InitAdjacencyLists();
         //La ponemos rosa porque acabamos de hacer un reset
         tiles[indexcurrentTile].current = true;
         tiles[indexcurrentTile].visited = true;
@@ -254,6 +243,7 @@ public class Controller : MonoBehaviour
 
         //TODO: Implementar BFS. Los nodos seleccionables los ponemos como selectable=true
         //Tendrás que cambiar este código por el BFS
+
         while (nodes.Count > 0)
         {
             Tile aux = nodes.Dequeue();
@@ -266,21 +256,54 @@ public class Controller : MonoBehaviour
                     tiles[t].distance = aux.distance + 1;
                     tiles[t].parent = aux;
                     nodes.Enqueue(tiles[t]);
+                    
                 }
 
             }
         }
+
+        //ponemos selectable
         for (int i = 0; i < Constants.NumTiles; i++)
         {
-            tiles[i].visited = false;
-            if (tiles[i].distance <= 2 && i != cops[0].GetComponent<CopMove>().currentTile && i!= cops[1].GetComponent<CopMove>().currentTile && i != robber.GetComponent<RobberMove>().currentTile )
+
+            if (cop == true)
             {
-                tiles[i].selectable = true;
+                if (tiles[i].distance <= 2 && i != cops[0].GetComponent<CopMove>().currentTile && i != cops[1].GetComponent<CopMove>().currentTile)
+                {
+                    tiles[i].selectable = true;
+                }
+
+
+            }
+            else
+            {
+                if (tiles[i].distance <= 2 && i != robber.GetComponent<RobberMove>().currentTile && i != cops[0].GetComponent<CopMove>().currentTile && i != cops[1].GetComponent<CopMove>().currentTile)
+                    tiles[i].selectable = true;
+
+            }
+        }
+        int nonClick;
+        if (clickedCop == 0)
+            nonClick = 1;
+        else
+            nonClick = 0;
+        foreach(int i in tiles[indexcurrentTile].adjacency)
+        {
+            if (i == cops[nonClick].GetComponent<CopMove>().currentTile)
+            {
+                if (i - 1 == indexcurrentTile)
+                    tiles[i + 1].selectable = false;
+                else if (i + 1 == indexcurrentTile)
+                    tiles[i - 1].selectable = false;
+                else if(i + 8 == indexcurrentTile)
+                    tiles[i - 8].selectable = false;
+                else if (i + 8 == indexcurrentTile)
+                    tiles[i - 8].selectable = false;
+
             }
         }
 
     }
-
 
 
 
